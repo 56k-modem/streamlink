@@ -3,8 +3,9 @@
 ## Build
 
 ```bash
-docker build --tag=streamlink . --no-cache
+docker build --pull --tag=streamlink --no-cache --progress=plain .
 ```
+
 ## Start
 
 ```bash
