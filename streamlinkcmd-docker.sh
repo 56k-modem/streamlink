@@ -1,5 +1,5 @@
 #!/bin/bash
-streamlink "--twitch-api-header=Authorization=OAuth xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" twitch.tv/name best -o "/twitch/{time}.ts" --retry-streams 5
+streamlink "--twitch-api-header=Authorization=OAuth $(cat oauth.txt)" twitch.tv/name best -o "/twitch/{time}.ts" --retry-streams 5
 
 # ls
 lscontent="ls -lh /twitch/ | awk '{print \$5, \$6, \$7, \$8, \$9}'"
