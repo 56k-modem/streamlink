@@ -3,11 +3,17 @@
 ## Build
 
 ```bash
-docker build --pull --tag=streamlink --no-cache --progress=plain .
+docker build --pull --tag=streamlink --no-cache .
 ```
 
 ## Start
 
 ```bash
 docker compose up -d
+```
+
+## Update
+
+```bash
+./update.sh
 ```
