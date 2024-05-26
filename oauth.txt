@@ -1,0 +1,2 @@
+Replace this file with your personal OAuth token from Twitch's website.
+Instructions: https://streamlink.github.io/cli/plugins/twitch.html#authentication
