@@ -1,5 +1,7 @@
 # Docker image and container for recording Twitch streams using Streamlink
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/56k-modem/streamlink/.github%2Fworkflows%2Fdocker-image.yml)
+
 ## Build
 
 ```bash
