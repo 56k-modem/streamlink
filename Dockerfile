@@ -1,19 +1,14 @@
-FROM debian:bullseye
-
-RUN groupadd -g 1000 GROUP && useradd -r -u 1000 -g GROUP USER && \
-    apt-get update && apt-get install -y --no-install-recommends curl ffmpeg python3 python3-pip && \
-    pip install --no-cache-dir -U streamlink && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
+FROM alpine:3.20.1
+RUN addgroup -g 1000 csd && adduser -S -u 1000 -G csd csd && \
+    apk update && apk add --no-cache curl ffmpeg python3 py3-pip bash tzdata && \
+    cp /usr/share/zoneinfo/Europe/Budapest /etc/localtime && \
+    echo "Europe/Budapest" > /etc/timezone && \
+    pip install --break-system-packages streamlink && \
     mkdir /twitch
-
+ENV TZ=Europe/Budapest
 WORKDIR /script
-
-COPY streamlinkcmd-docker.sh .
-
-RUN chown -R USER:GROUP streamlinkcmd-docker.sh && \
+COPY streamlinkcmd-docker.sh oauth.txt ./
+RUN chown csd:csd streamlinkcmd-docker.sh oauth.txt && \
     chmod +x streamlinkcmd-docker.sh
-
-USER USER
-
-CMD ["./streamlinkcmd-docker.sh"]
+USER csd
+CMD ["/bin/bash","./streamlinkcmd-docker.sh"]
