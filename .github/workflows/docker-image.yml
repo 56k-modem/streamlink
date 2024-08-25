@@ -7,12 +7,35 @@ on:
     branches: [ "master" ]
 
 jobs:
-
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    # Step 1: Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Step 2: Set up Docker Buildx (optional for multi-platform builds)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    # Step 3: Build the Docker image
     - name: Build the Docker image
       run: docker build --pull --tag=streamlink --no-cache .
+
+    # Step 4: Run the Docker container
+    - name: Run the Docker container
+      run: |
+        docker compose up -d
+
+    # Step 5: Wait for the container to initialize
+    - name: Wait for container to be ready
+      run: sleep 10
+
+    # Step 6: Check if the container is running
+    - name: Verify container is running
+      run: docker ps | grep streamlink
+
+    # Step 9: Clean up
+    - name: Clean up
+      run: docker compose down
