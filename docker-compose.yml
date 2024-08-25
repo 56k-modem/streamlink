@@ -7,3 +7,5 @@ services:
       - TZ=Etc/UTC
     volumes:
       - twitch:/twitch
+volumes:
+  twitch:
