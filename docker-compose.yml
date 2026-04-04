@@ -1,9 +1,6 @@
 services:
   streamlink-twitch:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: streamlink
+    image: ghcr.io/56k-modem/streamlink:latest
     container_name: streamlink-twitch
     command: ["/bin/bash","./streamlinkcmd-twitch.sh"]
     healthcheck:
@@ -26,10 +23,7 @@ services:
         max-size: "100m"
         max-file: "5"
   streamlink-kick:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: streamlink
+    image: ghcr.io/56k-modem/streamlink:latest
     container_name: streamlink-kick
     command: ["/bin/bash","./streamlinkcmd-kick.sh"]
     healthcheck:
@@ -51,10 +45,7 @@ services:
         max-size: "100m"
         max-file: "5"
   streamlink-test:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: streamlink
+    image: ghcr.io/56k-modem/streamlink:latest
     container_name: streamlink-test
     command: ["/bin/bash","./streamlinkcmd-test.sh"]
     stdin_open: true
@@ -71,10 +62,7 @@ services:
         max-size: "100m"
         max-file: "5"
   ntfy-test:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: streamlink
+    image: ghcr.io/56k-modem/streamlink:latest
     container_name: ntfy-test
     command: ["/bin/bash","./streamlinkcmd-ntfy-test.sh"]
     stdin_open: true
@@ -127,9 +115,7 @@ services:
         max-size: "100m"
         max-file: "5"
   vcsi:
-    build:
-      context: ./vcsi
-    image: vcsi:latest
+    image: ghcr.io/56k-modem/vcsi:latest
     container_name: vcsi
     environment:
       - TZ=Europe/Budapest
