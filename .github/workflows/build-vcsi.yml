@@ -33,5 +33,6 @@ jobs:
           context: ./vcsi
           push: true
           tags: ghcr.io/56k-modem/vcsi:latest
+          provenance: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
