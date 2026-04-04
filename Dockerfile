@@ -18,7 +18,7 @@ RUN groupadd -g 1000 csd && useradd -m -u 1000 -g csd csd && \
     mkdir /wubby && mkdir /test
 ENV TZ=Europe/Budapest
 WORKDIR /script
-COPY streamlinkcmd-twitch.sh streamlinkcmd-kick.sh streamlinkcmd-test.sh streamlinkcmd-ntfy-test.sh ./
-RUN chown csd:csd streamlinkcmd-twitch.sh streamlinkcmd-kick.sh streamlinkcmd-test.sh streamlinkcmd-ntfy-test.sh && \
-    chmod +x streamlinkcmd-twitch.sh streamlinkcmd-kick.sh streamlinkcmd-test.sh streamlinkcmd-ntfy-test.sh
+COPY streamlinkcmd-twitch.sh streamlinkcmd-kick.sh streamlinkcmd-test.sh ./
+RUN chown csd:csd streamlinkcmd-twitch.sh streamlinkcmd-kick.sh streamlinkcmd-test.sh && \
+    chmod +x streamlinkcmd-twitch.sh streamlinkcmd-kick.sh streamlinkcmd-test.sh
 USER csd
