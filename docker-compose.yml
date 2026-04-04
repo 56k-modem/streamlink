@@ -1,0 +1,173 @@
+services:
+  streamlink-twitch:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: streamlink
+    container_name: streamlink-twitch
+    command: ["/bin/bash","./streamlinkcmd-twitch.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep '/usr/local/bin/python3.12 /usr/local/bin/streamlink' | grep -v grep > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    environment:
+      - TZ=Europe/Budapest
+      - TWITCH_OAUTH
+      - HC_UUID
+      - HC_LOCAL_PING_URL
+    volumes:
+      - ${VOD_DIR}:/wubby
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+  streamlink-kick:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: streamlink
+    container_name: streamlink-kick
+    command: ["/bin/bash","./streamlinkcmd-kick.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep '/usr/local/bin/python3.12 /usr/local/bin/streamlink' | grep -v grep > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    environment:
+      - TZ=Europe/Budapest
+      - HC_UUID
+      - HC_LOCAL_PING_URL
+    volumes:
+      - ${VOD_DIR}:/wubby
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+  streamlink-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: streamlink
+    container_name: streamlink-test
+    command: ["/bin/bash","./streamlinkcmd-test.sh"]
+    stdin_open: true
+    tty: true
+    environment:
+      - TZ=Europe/Budapest
+      - TWITCH_OAUTH
+    volumes:
+      - ${TEST_DIR}:/test
+    restart: "no"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+  ntfy-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: streamlink
+    container_name: ntfy-test
+    command: ["/bin/bash","./streamlinkcmd-ntfy-test.sh"]
+    stdin_open: true
+    tty: true
+    environment:
+      - TZ=Europe/Budapest
+      - NTFY_TOKEN
+      - NTFY_URL
+      - NTFY_CLICK_URL
+    volumes:
+      - ${VOD_DIR}:/wubby
+    restart: "no"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+#  contact-sheets:
+#    image: nginx:alpine
+#    container_name: contact-sheets
+#    ports:
+#      - "8084:80"
+#    volumes:
+#      # 1) Folder whose contents you want to expose
+#      - /home/csd/vod-contact-sheets-vcsi:/usr/share/nginx/html:ro
+#      # 2) Drop-in Nginx config that turns on auto-indexing
+#      - ./contact-sheets.conf:/etc/nginx/conf.d/default.conf:ro
+#    environment:
+#      - TZ=Europe/Budapest
+#    restart: unless-stopped
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "100m"
+#        max-file: "5"
+  contact-sheets:
+    image: caddy:alpine
+    container_name: contact-sheets
+    ports:
+      - "8084:80"
+    volumes:
+      - ${CONTACT_SHEETS_DIR}:/srv:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    environment:
+      - TZ=Europe/Budapest
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+  vcsi:
+    build:
+      context: ./vcsi
+    image: vcsi:latest
+    container_name: vcsi
+    environment:
+      - TZ=Europe/Budapest
+    user: "1000:1000"
+    volumes:
+      - ${VOD_DIR}:/input
+      - ${CONTACT_SHEETS_DIR}:/output
+    restart: "no"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+  vcsi-trigger:
+    image: docker:cli
+    container_name: vcsi-trigger
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./watch-postproc.sh:/watch-postproc.sh:ro
+    environment:
+      - TZ=Europe/Budapest
+      - VOD_DIR
+      - CONTACT_SHEETS_DIR
+    entrypoint: ["/bin/sh", "/watch-postproc.sh"]
+#  vod-rsync:
+#    build:
+#      context: ./vod-rsync
+#    image: vod-rsync:latest
+#    container_name: vod-rsync
+#    environment:
+#      - TZ=Europe/Budapest
+#    volumes:
+#      - /disk1/share1/twitch:/disk1/share1/twitch:ro
+#      - /home/csd/.ssh:/root/.ssh:ro
+#    restart: "no"
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "100m"
+#        max-file: "5"
