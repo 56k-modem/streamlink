@@ -45,6 +45,7 @@ services:
         max-size: "100m"
         max-file: "5"
   streamlink-test:
+    profiles: ["testing"]
     image: ghcr.io/56k-modem/streamlink:latest
     container_name: streamlink-test
     command: ["/bin/bash","./streamlinkcmd-test.sh"]
