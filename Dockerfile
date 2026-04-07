@@ -1,7 +1,7 @@
 FROM python:3.12.7-slim-bookworm
 ENV streamlinkCommit=d3828a5e7b7025856d800c231b222ea64004dc37
 RUN groupadd -g 1000 csd && useradd -m -u 1000 -g csd csd && \
-    apt-get update && apt-get install -y --no-install-recommends ffmpeg procps curl git python3-pip xz-utils \
+    apt-get update && apt-get install -y --no-install-recommends procps curl git python3-pip xz-utils \
     && TARBALL="ffmpeg-git-amd64-static.tar.xz" \
     && TMP_DIR=$(mktemp -d) \
     && curl -sS -o "${TMP_DIR}/${TARBALL}" "https://johnvansickle.com/ffmpeg/builds/${TARBALL}" \
