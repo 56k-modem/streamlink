@@ -62,13 +62,12 @@ services:
         max-size: "100m"
         max-file: "5"
   contact-sheets:
-    image: caddy:alpine
+    image: ghcr.io/56k-modem/contact-sheets:latest
     container_name: contact-sheets
     ports:
       - "8084:80"
     volumes:
       - ${CONTACT_SHEETS_DIR}:/srv:ro
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
     environment:
       - TZ=Europe/Budapest
     restart: unless-stopped
@@ -93,14 +92,12 @@ services:
         max-size: "100m"
         max-file: "5"
   vcsi-trigger:
-    image: docker:cli
+    image: ghcr.io/56k-modem/postproc-trigger:latest
     container_name: vcsi-trigger
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./watch-postproc.sh:/watch-postproc.sh:ro
     environment:
       - TZ=Europe/Budapest
       - VOD_DIR
       - CONTACT_SHEETS_DIR
-    entrypoint: ["/bin/sh", "/watch-postproc.sh"]

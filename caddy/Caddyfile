@@ -1,7 +1,7 @@
 :80 {
     root * /srv
     file_server browse {
-        hide .* 
+        hide .*
     }
     header Cache-Control "no-cache, no-store, must-revalidate"
     header Pragma "no-cache"
