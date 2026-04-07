@@ -104,7 +104,7 @@ Manually trigger contact sheet generation (with full rescan):
 
 ### Building Images
 
-Images are hosted on GitHub Container Registry and rebuilt automatically on push via GitHub Actions. To build locally:
+Images are hosted on GitHub Container Registry and rebuilt automatically on push via GitHub Actions. The server only needs `docker-compose.yml`, `.env`, and the mapped data volumes. To build locally:
 
 ```bash
 # Streamlink recorder image
@@ -112,6 +112,12 @@ docker build -t streamlink .
 
 # vcsi post-processor image
 docker build -t vcsi ./vcsi
+
+# Contact-sheet web image
+docker build -t contact-sheets ./caddy
+
+# Post-processing trigger image
+docker build -t postproc-trigger ./postproc-trigger
 ```
 
 ## Health Monitoring
@@ -124,13 +130,17 @@ Each recording container pings [Healthchecks.io](https://healthchecks.io) when a
 .
 ├── docker-compose.yml          # Service definitions
 ├── Dockerfile                  # Streamlink recorder image
-├── Caddyfile                   # Web server config
 ├── streamlinkcmd-twitch.sh     # Twitch recording logic
 ├── streamlinkcmd-kick.sh       # Kick recording logic
 ├── streamlinkcmd-test.sh       # Test recording utility
-├── watch-postproc.sh           # Docker event watcher
 ├── manual-vcsi.sh              # Manually trigger post-processing
 ├── manual-rsync.sh             # Manually sync files
+├── caddy/
+│   ├── Caddyfile               # Web server config baked into image
+│   └── Dockerfile              # contact-sheets image
+├── postproc-trigger/
+│   ├── Dockerfile              # Docker event watcher image
+│   └── watch-postproc.sh       # Watcher entrypoint baked into image
 └── vcsi/
     ├── Dockerfile              # vcsi image
     └── vcsi-run.sh             # Contact sheet + poster pipeline

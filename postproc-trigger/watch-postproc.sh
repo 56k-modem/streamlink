@@ -21,7 +21,6 @@ while read action cname; do
           done &
           ;;
         die)
-#         echo "[watch-postproc] $(date '+%F %T')  $cname ended - running vcsi and rsync"
           echo "[watch-postproc] $(date '+%F %T')  $cname ended - running vcsi"
           docker rm vcsi-runner 2>/dev/null || true
           docker run \
@@ -31,11 +30,6 @@ while read action cname; do
             -v "${CONTACT_SHEETS_DIR:?CONTACT_SHEETS_DIR env var required}:/output" \
             ghcr.io/56k-modem/vcsi:latest
           echo "[watch-postproc] $(date '+%F %T') vcsi finished"
-#          docker run --rm \
-#            -v /disk1/share1/twitch:/disk1/share1/twitch:ro \
-#            -v /home/csd/.ssh:/root/.ssh:ro \
-#            vod-rsync:latest
-#          echo "[watch-postproc] $(date '+%F %T')  rsync finished"
           ;;
       esac
       ;;
