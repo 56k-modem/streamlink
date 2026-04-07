@@ -2,5 +2,5 @@ streamlink.code-workspace
 update.sh
 .env
 oauth.txt
-
+.codex
 AGENTS.md

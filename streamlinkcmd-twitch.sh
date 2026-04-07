@@ -15,6 +15,7 @@ streamlink --retry-streams 5 --stdout "--twitch-api-header=Authorization=OAuth $
   | ffmpeg -hide_banner -nostats -i pipe:0 -c copy -map 0:v -map 0:a -movflags +faststart "/wubby/twitch-${RID}.mp4"
 wait
 rm -f "/wubby/twitch-${RID}.recording"
+mv "/wubby/twitch-${RID}.mp4" "/wubby/twitch-$(echo "$RID" | cut -c1-8).mp4"
 lengthscript() {
     shopt -s nullglob
     cd /wubby
@@ -30,4 +31,3 @@ for url in \
   curl -fsS -m 10 --retry 5 --data-raw "$vodsdata" "$url"
 done
 rm /tmp/vodsdata.tmp
-mv "/wubby/twitch-${RID}.mp4" "/wubby/twitch-$(echo "$RID" | cut -c1-8).mp4"
