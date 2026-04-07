@@ -29,7 +29,7 @@ while read action cname; do
             --user "1000:1000" \
             -v "${VOD_DIR:?VOD_DIR env var required}:/input" \
             -v "${CONTACT_SHEETS_DIR:?CONTACT_SHEETS_DIR env var required}:/output" \
-            vcsi:latest
+            ghcr.io/56k-modem/vcsi:latest
           echo "[watch-postproc] $(date '+%F %T') vcsi finished"
 #          docker run --rm \
 #            -v /disk1/share1/twitch:/disk1/share1/twitch:ro \
