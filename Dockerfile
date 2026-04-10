@@ -1,5 +1,5 @@
 FROM python:3.12.7-slim-bookworm
-ENV streamlinkCommit=d3828a5e7b7025856d800c231b222ea64004dc37
+ENV streamlinkCommit=a309e6e9cf621655779c7283dff51686f5d2a22b
 RUN groupadd -g 1000 csd && useradd -m -u 1000 -g csd csd && \
     apt-get update && apt-get install -y --no-install-recommends procps curl git python3-pip xz-utils \
     && TARBALL="ffmpeg-master-latest-linux64-gpl.tar.xz" \
