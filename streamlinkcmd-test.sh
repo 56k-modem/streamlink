@@ -22,9 +22,11 @@ TWITCH_PID=$!
 streamlink --stdout "https://kick.com/${KICK_CHANNEL}" best | ffmpeg -hide_banner -nostats -t 60 -i pipe:0 -c copy -map 0:v -map 0:a -movflags +faststart "$KICK_OUT" &
 KICK_PID=$!
 
-echo "*** Stopping recordings"
+echo "*** Waiting for 60-second recordings to finish"
 wait "$TWITCH_PID" 2>/dev/null || true
 wait "$KICK_PID"   2>/dev/null || true
+
+echo "*** Recordings stopped"
 
 echo "*** Running integrity checks"
 
