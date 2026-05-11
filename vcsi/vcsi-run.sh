@@ -4,7 +4,9 @@ set -euo pipefail
 TS_FOLDER="${TS_FOLDER:-/input}"
 JPG_FOLDER="${JPG_FOLDER:-/output}"
 FONT_PATH="${FONT_PATH:-/usr/share/fonts/truetype/Misc-Fixed-7x13.ttf}"
-SEASON_DIR="$TS_FOLDER/TV Shows/Wubby Streams/Season 01"
+WUBBY_STREAMS_DIR="$TS_FOLDER/TV Shows/Wubby Streams"
+CURRENT_SEASON="Season $(date +%Y)"
+SEASON_DIR="$WUBBY_STREAMS_DIR/$CURRENT_SEASON"
 
 RESCAN=false
 for arg in "$@"; do
@@ -31,7 +33,11 @@ _purge_stale_sheets() {
 }
 
 _purge_stale_sheets "$TS_FOLDER"
-$RESCAN && _purge_stale_sheets "$SEASON_DIR"
+if $RESCAN; then
+    for sdir in "$WUBBY_STREAMS_DIR"/Season*/; do
+        [ -d "$sdir" ] && _purge_stale_sheets "$sdir"
+    done
+fi
 
 ###############################################################################
 # Step 1 – generate sheets; skip any JPEGs that still exist
@@ -52,7 +58,11 @@ _generate_sheets() {
 }
 
 _generate_sheets "$TS_FOLDER"
-$RESCAN && _generate_sheets "$SEASON_DIR"
+if $RESCAN; then
+    for sdir in "$WUBBY_STREAMS_DIR"/Season*/; do
+        [ -d "$sdir" ] && _generate_sheets "$sdir"
+    done
+fi
 
 echo "[vcsi] $(date '+%F %T') for jellyfin pass started"
 
@@ -104,15 +114,19 @@ _generate_posters() {
 }
 
 _generate_posters "$TS_FOLDER"
-$RESCAN && _generate_posters "$SEASON_DIR"
+if $RESCAN; then
+    for sdir in "$WUBBY_STREAMS_DIR"/Season*/; do
+        [ -d "$sdir" ] && _generate_posters "$sdir"
+    done
+fi
 
 ###############################################################################
 # Step 2 – prune orphaned JPEGs (videos deleted or moved)
 ###############################################################################
 for jpg_path in "$JPG_FOLDER"/*.jpg; do
     base="${jpg_path##*/}"; base="${base%.jpg}"
-    # Also keep sheets whose video was renamed and moved to Season 01
-    season_match=( "$SEASON_DIR"/*"$base" )
+    # Also keep sheets whose video was renamed and moved to any Season folder
+    season_match=( "$WUBBY_STREAMS_DIR"/Season*/*"$base" )
     [[ -f "$TS_FOLDER/$base" ]] || [[ -f "${season_match[0]:-}" ]] || { rm -v "$jpg_path"; }
 done
 
@@ -122,31 +136,24 @@ done
 shopt -s nullglob
 for jpg_path in "$TS_FOLDER"/*.jpg; do
     base="$(basename "$jpg_path" .jpg)"
-    # Also keep posters whose video was renamed and moved to Season 01
-    season_match=( "$SEASON_DIR"/*"${base}.mp4" )
+    # Also keep posters whose video was renamed and moved to any Season folder
+    season_match=( "$WUBBY_STREAMS_DIR"/Season*/*"${base}.mp4" )
     [[ -f "$TS_FOLDER/$base.mp4" ]] || [[ -f "${season_match[0]:-}" ]] || { echo "[vcsi] removing orphaned poster: $jpg_path"; rm -v "$jpg_path"; }
 done
 
 ###############################################################################
-# Step 3 – rename and move completed VODs to "Season 01" with Jellyfin naming
+# Step 3 – rename and move completed VODs to current Season with Jellyfin naming
 # Skips any mp4 whose .recording sentinel file still exists (still being written)
 ###############################################################################
 mkdir -p "$SEASON_DIR"
 
-echo "[vcsi] $(date '+%F %T') moving completed VODs to Season 01..."
+echo "[vcsi] $(date '+%F %T') moving completed VODs to $CURRENT_SEASON..."
 
-# Find highest S01Exx episode number already in Season 01
-highest=0
-for f in "$SEASON_DIR"/Wubby\ Streams\ -\ S01E*.mp4; do
-    [ -f "$f" ] || continue
-    num=$(basename "$f" | sed -n 's/.*S01E\([0-9][0-9]*\).*/\1/p')
-    [ -z "$num" ] && continue
-    num=$(( 10#$num ))
-    [ "$num" -gt "$highest" ] && highest=$num
-done
+# Format: Wubby Streams - S<YYYY>E<MMDD> - <base>
+SEASON_TAG="S$(date +%Y)"
+EPISODE_TAG="E$(date +%m%d)"
 
-# Move each completed mp4 (and its .jpg poster) from the input root to Season 01,
-# sorted by modification time so multiple new VODs are numbered chronologically
+# Move each completed mp4 (and its .jpg poster) from the input root to Season DIR
 while IFS= read -r mp4; do
     [ -f "$mp4" ] || continue
     base=$(basename "$mp4" .mp4)
@@ -155,9 +162,7 @@ while IFS= read -r mp4; do
         echo "[vcsi] skipping ${base}.mp4 (recording still in progress)"
         continue
     fi
-    highest=$((highest + 1))
-    ep=$(printf "%02d" "$highest")
-    new_name="Wubby Streams - S01E${ep} - ${base}"
+    new_name="Wubby Streams - ${SEASON_TAG}${EPISODE_TAG} - ${base}"
     mv -- "$mp4" "$SEASON_DIR/${new_name}.mp4"
     echo "[vcsi] moved ${base}.mp4 -> ${new_name}.mp4"
     jpg="$TS_FOLDER/${base}.jpg"
