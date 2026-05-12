@@ -1,6 +1,11 @@
+x-streamlink-build: &streamlink-build
+  context: .
+  dockerfile: Dockerfile
+
 services:
   streamlink-twitch:
     image: ghcr.io/56k-modem/streamlink:latest
+    build: *streamlink-build
     container_name: streamlink-twitch
     command: ["/bin/bash","./streamlinkcmd-twitch.sh"]
     healthcheck:
@@ -24,6 +29,7 @@ services:
         max-file: "5"
   streamlink-kick:
     image: ghcr.io/56k-modem/streamlink:latest
+    build: *streamlink-build
     container_name: streamlink-kick
     command: ["/bin/bash","./streamlinkcmd-kick.sh"]
     healthcheck:
@@ -47,6 +53,7 @@ services:
   streamlink-test:
     profiles: ["testing"]
     image: ghcr.io/56k-modem/streamlink:latest
+    build: *streamlink-build
     container_name: streamlink-test
     command: ["/bin/bash","./streamlinkcmd-test.sh"]
     stdin_open: true
@@ -64,6 +71,9 @@ services:
         max-file: "5"
   contact-sheets:
     image: ghcr.io/56k-modem/contact-sheets:latest
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
     container_name: contact-sheets
     ports:
       - "8084:80"
@@ -79,6 +89,9 @@ services:
         max-file: "5"
   vcsi:
     image: ghcr.io/56k-modem/vcsi:latest
+    build:
+      context: ./vcsi
+      dockerfile: Dockerfile
     container_name: vcsi
     environment:
       - TZ=Europe/Budapest
@@ -94,6 +107,9 @@ services:
         max-file: "5"
   vcsi-trigger:
     image: ghcr.io/56k-modem/postproc-trigger:latest
+    build:
+      context: ./postproc-trigger
+      dockerfile: Dockerfile
     container_name: vcsi-trigger
     restart: unless-stopped
     volumes:
