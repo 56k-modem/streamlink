@@ -4,7 +4,7 @@ A Docker-based system that automatically records [PaymoneyWubby](https://twitch.
 
 ## Overview
 
-When a stream goes live, the recording containers wake up and capture it. Once the stream ends, a post-processing pipeline runs automatically: contact sheet images are generated (grids of video thumbnails), a 4K poster image is created for each recording, and the files are renamed into episodic format (`S01E###`) so Jellyfin picks them up cleanly. The contact sheets are served via a Caddy web server for quick visual browsing.
+When a stream goes live, the recording containers wake up and capture it. Once the stream ends, a post-processing pipeline runs automatically: contact sheet images are generated (grids of video thumbnails), a 4K poster image is created for each recording, and the files are renamed into episodic format (`S<YEAR>E<MONTH><DAY>`) so Jellyfin picks them up cleanly. The contact sheets are served via a Caddy web server for quick visual browsing.
 
 ## How It Works
 
@@ -21,7 +21,7 @@ vcsi-trigger detects container exit
 vcsi pipeline runs:
   1. Generate contact sheet (3×5 thumbnail grid)
   2. Generate 4K poster image (3840×2160)
-  3. Rename + move to Jellyfin season directory (S01E###)
+  3. Rename + move to Jellyfin season directory (S<YEAR>E<MONTH><DAY>)
   4. Rename contact sheets to match
   5. Clean up orphaned sheets/posters
       │
@@ -51,14 +51,14 @@ Recordings are organized as a TV show library:
 ```
 TV Shows/
 └── Wubby Streams/
-    └── Season 01/
-        ├── Wubby Streams - S01E01 - twitch-ab12cd34.mp4
-        ├── Wubby Streams - S01E01 - twitch-ab12cd34.jpg   ← poster
-        ├── Wubby Streams - S01E02 - kick-ef56gh78.mp4
-        └── Wubby Streams - S01E02 - kick-ef56gh78.jpg
+    └── Season 2026/
+        ├── Wubby Streams - S2026E0511 - twitch-ab12cd34.mp4
+        ├── Wubby Streams - S2026E0511 - twitch-ab12cd34.jpg   ← poster
+        ├── Wubby Streams - S2026E0512 - kick-ef56gh78.mp4
+        └── Wubby Streams - S2026E0512 - kick-ef56gh78.jpg
 ```
 
-Poster images are 4K (3840×2160) so they look sharp at any display size. Episode numbers are assigned in chronological order and never reused.
+Poster images are 4K (3840×2160) so they look sharp at any display size. Episode numbers are derived from the current date (e.g., S2026E0511). Unique IDs at the end of filenames ensure no collisions if multiple streams occur on the same day.
 
 ## Recording Details
 
