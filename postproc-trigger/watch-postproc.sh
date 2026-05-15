@@ -22,13 +22,7 @@ while read action cname; do
           ;;
         die)
           echo "[watch-postproc] $(date '+%F %T')  $cname ended - running vcsi"
-          docker rm vcsi-runner 2>/dev/null || true
-          docker run \
-            --name vcsi-runner \
-            --user "1000:1000" \
-            -v "${VOD_DIR:?VOD_DIR env var required}:/input" \
-            -v "${CONTACT_SHEETS_DIR:?CONTACT_SHEETS_DIR env var required}:/output" \
-            ghcr.io/56k-modem/vcsi:latest
+          docker exec vcsi /usr/local/bin/vcsi-run.sh
           echo "[watch-postproc] $(date '+%F %T') vcsi finished"
           ;;
       esac
