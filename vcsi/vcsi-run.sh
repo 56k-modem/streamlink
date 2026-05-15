@@ -147,13 +147,10 @@ done
 ###############################################################################
 mkdir -p "$SEASON_DIR"
 
-echo "[vcsi] $(date '+%F %T') moving completed VODs to $CURRENT_SEASON..."
+echo "[vcsi] $(date '+%F %T') moving completed VODs to Season folders..."
 
-# Format: Wubby Streams - S<YYYY>E<MMDD> - <base>
-SEASON_TAG="S$(date +%Y)"
-EPISODE_TAG="E$(date +%m%d)"
-
-# Move each completed mp4 (and its .jpg poster) from the input root to Season DIR
+# Move each completed mp4 (and its .jpg poster) from the input root to its respective Season DIR,
+# sorted by modification time so multiple new VODs are numbered chronologically.
 while IFS= read -r mp4; do
     [ -f "$mp4" ] || continue
     base=$(basename "$mp4" .mp4)
@@ -162,12 +159,27 @@ while IFS= read -r mp4; do
         echo "[vcsi] skipping ${base}.mp4 (recording still in progress)"
         continue
     fi
-    new_name="Wubby Streams - ${SEASON_TAG}${EPISODE_TAG} - ${base}"
-    mv -- "$mp4" "$SEASON_DIR/${new_name}.mp4"
+
+    # Derive date from the file itself to ensure correct chronological sorting
+    # and handle streams that cross midnight or are processed in batches.
+    fyear=$(date -r "$mp4" +%Y)
+    fdate=$(date -r "$mp4" +%m%d)
+    fseason_dir="$WUBBY_STREAMS_DIR/Season ${fyear}"
+    mkdir -p "$fseason_dir"
+
+    # Handle multiple streams on the same day by appending a sequence number.
+    # This ensures Jellyfin sorts them chronologically even if they share a date.
+    # We check the destination folder for existing .mp4 files with the same date tag.
+    count=$(find "$fseason_dir" -maxdepth 1 -name "Wubby Streams - S${fyear}E${fdate}*" -name "*.mp4" | wc -l)
+    seq_str=$(printf "%02d" $((count + 1)))
+    
+    new_name="Wubby Streams - S${fyear}E${fdate}${seq_str} - ${base}"
+
+    mv -- "$mp4" "$fseason_dir/${new_name}.mp4"
     echo "[vcsi] moved ${base}.mp4 -> ${new_name}.mp4"
     jpg="$TS_FOLDER/${base}.jpg"
     if [ -f "$jpg" ]; then
-        mv -- "$jpg" "$SEASON_DIR/${new_name}.jpg"
+        mv -- "$jpg" "$fseason_dir/${new_name}.jpg"
         echo "[vcsi] moved ${base}.jpg -> ${new_name}.jpg"
     fi
     sheet="$JPG_FOLDER/${base}.mp4.jpg"
