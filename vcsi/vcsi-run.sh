@@ -5,7 +5,7 @@ TS_FOLDER="${TS_FOLDER:-/input}"
 JPG_FOLDER="${JPG_FOLDER:-/output}"
 FONT_PATH="${FONT_PATH:-/usr/share/fonts/truetype/Misc-Fixed-7x13.ttf}"
 WUBBY_STREAMS_DIR="$TS_FOLDER/TV Shows/Wubby Streams"
-CURRENT_SEASON="Season $(date +%Y)"
+CURRENT_SEASON="Season $(date +%y)"
 SEASON_DIR="$WUBBY_STREAMS_DIR/$CURRENT_SEASON"
 
 RESCAN=false
@@ -162,7 +162,7 @@ while IFS= read -r mp4; do
 
     # Derive date from the file itself to ensure correct chronological sorting
     # and handle streams that cross midnight or are processed in batches.
-    fyear=$(date -r "$mp4" +%Y)
+    fyear=$(date -r "$mp4" +%y)
     fdate=$(date -r "$mp4" +%m%d)
     fseason_dir="$WUBBY_STREAMS_DIR/Season ${fyear}"
     mkdir -p "$fseason_dir"

@@ -4,14 +4,14 @@ A Docker-based system that automatically records [PaymoneyWubby](https://twitch.
 
 ## Overview
 
-When a stream goes live, the recording containers wake up and capture it. Once the stream ends, a post-processing pipeline runs automatically: contact sheet images are generated (grids of video thumbnails), a 4K poster image is created for each recording, and the files are renamed into episodic format (`S<YEAR>E<MONTH><DAY><SEQ>`) so Jellyfin picks them up cleanly. The contact sheets are served via a Caddy web server for quick visual browsing.
+When a stream goes live, the recording containers wake up and capture it. Once the stream ends, a post-processing pipeline runs automatically: contact sheet images are generated (grids of video thumbnails), a 4K poster image is created for each recording, and the files are renamed into episodic format (`S<YY>E<MONTH><DAY><SEQ>`) so Jellyfin picks them up cleanly. The contact sheets are served via a Caddy web server for quick visual browsing.
 
 ## Features
 
 - **Automated Recording:** Captures Kick and Twitch streams to `.mp4`.
 - **Contact Sheets:** Generates thumbnail grids for every recording.
 - **High-Res Posters:** Generates 4K (3840x2160) posters for Jellyfin.
-- **Auto-Renaming:** Moves completed files to a dynamic Season directory with episodic naming: `Wubby Streams - S2026E051101 - twitch-abc123de.mp4`.
+- **Auto-Renaming:** Moves completed files to a dynamic Season directory with episodic naming: `Wubby Streams - S26E051101 - twitch-abc123de.mp4`.
 - **Web UI:** Browse contact sheets via a simple web interface.
 
 ## Workflow
@@ -20,7 +20,7 @@ When a stream goes live, the recording containers wake up and capture it. Once t
 2.  **Post-Process (vcsi):**
     -   Generates contact sheet in a separate web-root.
     -   Generates a 16:9 poster image alongside the video.
-3.  **Rename + move to Jellyfin season directory (S<YEAR>E<MONTH><DAY><SEQ>)**
+3.  **Rename + move to Jellyfin season directory (S<YY>E<MONTH><DAY><SEQ>)**
 4.  **Clean Up:** Stale contact sheets and orphaned images are pruned.
 
 ## How It Works
@@ -38,7 +38,7 @@ vcsi-trigger detects container exit
 vcsi pipeline runs:
   1. Generate contact sheet (3×5 thumbnail grid)
   2. Generate 4K poster image (3840×2160)
-  3. Rename + move to Jellyfin season directory (S<YEAR>E<MONTH><DAY><SEQ>)
+  3. Rename + move to Jellyfin season directory (S<YY>E<MONTH><DAY><SEQ>)
   4. Rename contact sheets to match
   5. Clean up orphaned sheets/posters
       │
@@ -68,14 +68,14 @@ Recordings are organized as a TV show library:
 ```
 TV Shows/
 └── Wubby Streams/
-    └── Season 2026/
-        ├── Wubby Streams - S2026E051101 - twitch-ab12cd34.mp4
-        ├── Wubby Streams - S2026E051101 - twitch-ab12cd34.jpg   ← poster
-        ├── Wubby Streams - S2026E051201 - kick-ef56gh78.mp4
-        └── Wubby Streams - S2026E051201 - kick-ef56gh78.jpg
+    └── Season 26/
+        ├── Wubby Streams - S26E051101 - twitch-ab12cd34.mp4
+        ├── Wubby Streams - S26E051101 - twitch-ab12cd34.jpg   ← poster
+        ├── Wubby Streams - S26E051201 - kick-ef56gh78.mp4
+        └── Wubby Streams - S26E051201 - kick-ef56gh78.jpg
 ```
 
-Poster images are 4K (3840×2160) so they look sharp at any display size. Episode numbers are derived from the file's modification date (e.g., S2026E051101). A two-digit sequence suffix is appended to handle multiple streams on the same day, ensuring correct chronological sorting in Jellyfin. Unique IDs at the end of filenames provide an extra layer of collision protection.
+Poster images are 4K (3840×2160) so they look sharp at any display size. Episode numbers are derived from the file's modification date (e.g., S26E051101). A two-digit sequence suffix is appended to handle multiple streams on the same day, ensuring correct chronological sorting in Jellyfin. Unique IDs at the end of filenames provide an extra layer of collision protection.
 
 ## Recording Details
 
