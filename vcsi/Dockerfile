@@ -1,9 +1,10 @@
-FROM python:3.9-slim
+FROM python:3.12-slim
 LABEL org.opencontainers.image.source https://github.com/56k-modem/streamlink
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core bash && \
     rm -rf /var/lib/apt/lists/*
-RUN pip install --no-cache-dir vcsi
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 COPY Misc-Fixed-7x13.ttf /usr/share/fonts/truetype/
 RUN fc-cache -fv
 COPY vcsi-run.sh /usr/local/bin/
