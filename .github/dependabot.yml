@@ -1,0 +1,45 @@
+# Dependabot configuration file
+# For more information, see: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for the root Dockerfile
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for Caddy Dockerfile
+  - package-ecosystem: "docker"
+    directory: "/caddy"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for postproc-trigger Dockerfile
+  - package-ecosystem: "docker"
+    directory: "/postproc-trigger"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for vcsi Dockerfile
+  - package-ecosystem: "docker"
+    directory: "/vcsi"
+    schedule:
+      interval: "weekly"
+
+  # Maintain Python dependencies (requires requirements.txt in these folders)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/vcsi"
+    schedule:
+      interval: "weekly"
