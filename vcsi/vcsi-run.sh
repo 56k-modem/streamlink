@@ -9,8 +9,10 @@ CURRENT_SEASON="Season $(date +%y)"
 SEASON_DIR="$WUBBY_STREAMS_DIR/$CURRENT_SEASON"
 
 RESCAN=false
+STAY_ALIVE=false
 for arg in "$@"; do
     [[ "$arg" == "--rescan" ]] && RESCAN=true
+    [[ "$arg" == "--stay-alive" ]] && STAY_ALIVE=true
 done
 
 echo "[vcsi] $(date '+%F %T')  pass started"
@@ -192,3 +194,8 @@ done < <(find "$TS_FOLDER" -maxdepth 1 -name "*.mp4" -printf '%T@ %p\n' | sort -
 echo "[vcsi] $(date '+%F %T') VOD move finished"
 
 echo "[vcsi] $(date '+%F %T')  pass finished"
+
+if $STAY_ALIVE; then
+    echo "[vcsi] Entering stay-alive mode..."
+    exec sleep infinity
+fi

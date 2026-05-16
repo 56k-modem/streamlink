@@ -93,13 +93,14 @@ services:
       context: ./vcsi
       dockerfile: Dockerfile
     container_name: vcsi
+    command: ["--stay-alive"]
     environment:
       - TZ=Europe/Budapest
     user: "1000:1000"
     volumes:
       - ${VOD_DIR}:/input
       - ${CONTACT_SHEETS_DIR}:/output
-    restart: "no"
+    restart: unless-stopped
     logging:
       driver: "json-file"
       options:
