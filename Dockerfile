@@ -1,6 +1,6 @@
 FROM python:3.12.7-slim-bookworm
 LABEL org.opencontainers.image.source=https://github.com/56k-modem/streamlink
-ENV streamlinkCommit=a0cd8f7a0355c4b456a7e49cd589aa6df79264f1
+COPY requirements.txt .
 RUN groupadd -g 1000 csd && useradd -m -u 1000 -g csd csd && \
     apt-get update && apt-get install -y --no-install-recommends procps curl git python3-pip xz-utils \
     && TARBALL="ffmpeg-master-latest-linux64-gpl.tar.xz" \
@@ -13,7 +13,7 @@ RUN groupadd -g 1000 csd && useradd -m -u 1000 -g csd csd && \
     && rm -rf "$TMP_DIR" && \
     rm -rf /var/lib/apt/lists/* && \
     pip install --root-user-action=ignore --upgrade pip && \
-    pip install --root-user-action=ignore --upgrade git+https://github.com/streamlink/streamlink.git@${streamlinkCommit} && \
+    pip install --root-user-action=ignore -r requirements.txt && \
     mkdir /wubby && mkdir /test
 ENV TZ=Europe/Budapest
 WORKDIR /script
